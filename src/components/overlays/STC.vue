@@ -50,36 +50,42 @@ export default {
     // Finally, let's make the canvas dirty!
 
     draw(ctx) {
+      const layout = this.$props.layout;
+      const upper = layout.$2screen(this.sett.upper || 70);
+      const lower = layout.$2screen(this.sett.lower || 30);
+      const data = this.$props.data;
+
+      // RSI values
+
       ctx.lineWidth = this.line_width;
       ctx.strokeStyle = this.color;
       ctx.beginPath();
 
-      const layout = this.$props.layout;
-      const i = this.data_index;
-      const data = this.$props.data;
-
-      if (!this.skip_nan) {
-        for (var k = 0, n = data.length; k < n; k++) {
-          let p = data[k];
-          let x = layout.t2screen(p[0]);
-          let y = layout.$2screen(p[i]);
-          ctx.lineTo(x, y);
-        }
-      } else {
-        var skip = false;
-        for (var k = 0, n = data.length; k < n; k++) {
-          let p = data[k];
-          let x = layout.t2screen(p[0]);
-          let y = layout.$2screen(p[i]);
-          if (p[i] == null || y !== y) {
-            skip = true;
-          } else {
-            if (skip) ctx.moveTo(x, y);
-            ctx.lineTo(x, y);
-            skip = false;
-          }
-        }
+      for (var k = 0, n = data.length; k < n; k++) {
+        let p = data[k];
+        let x = layout.t2screen(p[0]);
+        let y = layout.$2screen(p[1]);
+        ctx.lineTo(x, y);
       }
+
+      ctx.stroke();
+
+      ctx.strokeStyle = this.band_color;
+      ctx.setLineDash([5]); // Will be removed after draw()
+      ctx.beginPath();
+
+      // Fill the area between the bands
+      ctx.fillStyle = this.sett.backColor;
+      ctx.fillRect(0, upper, layout.width, lower - upper);
+
+      // Upper band
+      ctx.moveTo(0, upper);
+      ctx.lineTo(layout.width, upper);
+
+      // Lower band
+      ctx.moveTo(0, lower);
+      ctx.lineTo(layout.width, lower);
+
       ctx.stroke();
     },
 
@@ -91,7 +97,7 @@ export default {
     // just create a new overlay with the same type:
     // e.g. use_for() { return ['EMA'] }.
     use_for() {
-      return ["STC"];
+      return ["userSTC", "userCMF", "userStochRSI", "userCCI"];
     },
 
     // Colors for the legend, should have the
@@ -104,7 +110,7 @@ export default {
       return [
         {
           value: `${values[1]}`,
-          color: "#ff9669",
+          color: this.sett.color,
         },
       ];
     },
@@ -135,8 +141,15 @@ export default {
     skip_nan() {
       return this.sett.skipNaN;
     },
+
+    band_color() {
+      return this.sett.bandColor || "#ddd";
+    },
   },
   data() {
+    console.log("STC data");
+    console.log(this.color);
+    console.log(this.$props.settings);
     return {
       COLORS: ["#42b28a", "#5691ce", "#612ff9", "#d50b90", "#ff2316"],
     };
