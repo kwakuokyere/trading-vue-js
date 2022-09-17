@@ -1,4 +1,3 @@
-
 <template>
     <!-- Main component  -->
     <div class="trading-vue" v-bind:id="id"
@@ -45,7 +44,7 @@ import TheTip from './components/TheTip.vue'
 import XControl from './mixins/xcontrol.js'
 
 export default {
-    name: 'TradingVue',
+    name: 'CoiningIt',
     components: {
         Chart, Toolbar, Widgets, TheTip
     },
@@ -53,11 +52,11 @@ export default {
     props: {
         titleTxt: {
             type: String,
-            default: 'TradingVue.js'
+            default: 'CoiningIt'
         },
         id: {
             type: String,
-            default: 'trading-vue-js'
+            default: 'coiningIt-view'
         },
         width: {
             type: Number,

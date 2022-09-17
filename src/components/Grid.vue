@@ -31,6 +31,8 @@ export default {
     mixins: [Canvas, UxList],
     components: { Crosshair, KeyboardListener },
     created() {
+
+
         // List of all possible overlays (builtin + custom)
         this._list = [
             Spline, Splines, Range, Trades, Channel, Segment,
